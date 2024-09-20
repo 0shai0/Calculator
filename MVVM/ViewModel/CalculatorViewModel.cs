@@ -49,6 +49,7 @@ namespace Calculator.MVVM.ViewModel
             bool isLastNumber = FormulaAndResult.Length > 0 && char.IsDigit(FormulaAndResult[^1]);
             bool isLastOperator = FormulaAndResult.Length > 0 && operators.Contains(FormulaAndResult[^1]);
             bool isLastZero = FormulaAndResult.Length > 0 && FormulaAndResult[^1] == '0';
+            bool isLastParenthesisOpen = FormulaAndResult.Length > 0 && FormulaAndResult[^1] == '(';
             bool isLastParenthesisClose = FormulaAndResult.Length > 0 && FormulaAndResult[^1] == ')';
             bool isLastDot = FormulaAndResult.Length > 0 && FormulaAndResult[^1] == '.';
             bool unmatchedParentheses = FormulaAndResult.Count(c => c == '(') != FormulaAndResult.Count(c => c == ')');
@@ -121,6 +122,13 @@ namespace Calculator.MVVM.ViewModel
                     return;
                 }
 
+                // 마지막이 ')'로 끝나고 다음에 입력되는 것이 ')'이외의 연산자인 경우
+                if (isLastParenthesisClose && isInputOperator && input != ")")
+                {
+                    FormulaAndResult += input;
+                    return;
+                }
+
                 // 연산자 뒤에 연산자가 입력될 경우
                 if (isInputOperator && input != "(")
                 {
@@ -128,10 +136,11 @@ namespace Calculator.MVVM.ViewModel
                 }
 
                 // '(' 뒤에 '('이 입력될 경우 
-                if (isLastOperator && input == "(")
+                if (isLastParenthesisOpen && input == "(")
                 {
                     return;
                 }
+
 
                 // 연산자 바로 뒤에 '.'이 입력될 경우
                 if (input == ".")
@@ -191,15 +200,18 @@ namespace Calculator.MVVM.ViewModel
         }
 
 
-
-
-        // backSpace 클릭, 키보드 입력 시 FormulaAndResult에서 제일 뒤에 있는 한 글자 삭제
+        // backSpace 클릭 및 키보드 입력 시 FormulaAndResult에서 제일 뒤에 있는 한 글자 삭제
 
         public void DeleteFormula()
         {
             if (!string.IsNullOrEmpty(FormulaAndResult))
             {
                 FormulaAndResult = FormulaAndResult.Substring(0, FormulaAndResult.Length - 1);
+            }
+
+            if (FormulaAndResult == "Error")
+            {
+                Clear();
             }
         }
 
@@ -216,11 +228,25 @@ namespace Calculator.MVVM.ViewModel
                 string modifiedFormula = FormulaAndResult.Replace('×', '*').Replace('÷', '/');
 
                 bool isEmpty = FormulaAndResult.Length == 0;
+                bool isLastOperator = FormulaAndResult.Length > 0 && operators.Contains(FormulaAndResult[^1]);
+                bool isLastParenthesisClose = FormulaAndResult.Length > 0 && FormulaAndResult[^1] == ')';
+                bool unmatchedParentheses = FormulaAndResult.Count(c => c == '(') != FormulaAndResult.Count(c => c == ')');
+
+
+                // 괄호가 닫히지 않은 상태에서 연산자가 마지막인데 '='을 누르면 그냥 return
+                if (unmatchedParentheses && isLastOperator)
+                {
+                    return;
+                }
+
 
                 // 괄호가 열려있다면 닫는 괄호 추가
                 if (FormulaAndResult.Count(c => c == '(') > FormulaAndResult.Count(c => c == ')'))
                 {
                     FormulaAndResult += ")";
+
+                    // ')'를 추가한 후에는 modifiedFormula를 반영하지 않고 바로 계산을 하기에 오류 발생해 다시 선언
+                    modifiedFormula = FormulaAndResult.Replace('×', '*').Replace('÷', '/');
                 }
 
                 // '='이 맨 앞에 입력될 경우
@@ -228,9 +254,10 @@ namespace Calculator.MVVM.ViewModel
                 {
                     return;
                 }
+               
 
                 // 연산자 뒤에 '='을 입력될 경우
-                if (operators.Contains(FormulaAndResult[^1]))
+                if (isLastOperator && !isLastParenthesisClose)
                 {
                     return;
                 }
@@ -239,11 +266,6 @@ namespace Calculator.MVVM.ViewModel
                 // 수식을 계산
                 FormulaAndResult = _model.Calculation(modifiedFormula).ToString();
 
-
-
-                // 연산자 우선순위대로 처리하는 코드 작성하기
-                // -곱하기 -는 +로 변환, 계산
-                // 소수점 계산
             }
             catch
             {
