@@ -32,9 +32,6 @@ namespace Calculator.MVVM.ViewModel
         }
 
 
-
-
-
         // 클릭 이벤트, 키보드 입력 시 FormulaAndResult에 추가
         // FormulaAndResult[^1]는 char이기 때문에 ""이 아닌 ''로 작성
 
@@ -214,6 +211,10 @@ namespace Calculator.MVVM.ViewModel
             try
             {
                 string operators = "+-×÷()";
+
+                // 수식에서 연산자 변환
+                string modifiedFormula = FormulaAndResult.Replace('×', '*').Replace('÷', '/');
+
                 bool isEmpty = FormulaAndResult.Length == 0;
 
                 // 괄호가 열려있다면 닫는 괄호 추가
@@ -233,9 +234,11 @@ namespace Calculator.MVVM.ViewModel
                 {
                     return;
                 }
+                
 
                 // 수식을 계산
-                FormulaAndResult = _model.Calculation(FormulaAndResult).ToString();
+                FormulaAndResult = _model.Calculation(modifiedFormula).ToString();
+
 
 
                 // 연산자 우선순위대로 처리하는 코드 작성하기
