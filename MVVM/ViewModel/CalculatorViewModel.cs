@@ -43,6 +43,9 @@ namespace Calculator.MVVM.ViewModel
             // 연산자 리스트 정의
             string operators = "+-×÷()";
 
+            // FormulaAndResult에서 마지막으로 사용된 operators의 위치가 어디가 마지막인지 확인
+            int lastOperatorIndex = FormulaAndResult.LastIndexOfAny(operators.ToCharArray());
+
             bool isEmpty = FormulaAndResult.Length == 0;
             bool isInputNumber = char.IsDigit(input[0]);
             bool isInputOperator = operators.Contains(input);
@@ -54,6 +57,8 @@ namespace Calculator.MVVM.ViewModel
             bool unmatchedParentheses = FormulaAndResult.Count(c => c == '(') != FormulaAndResult.Count(c => c == ')');
             bool isParenthesesBalancedOrOpenLess = FormulaAndResult.Count(c => c == '(') <= FormulaAndResult.Count(c => c == ')');
             bool isSingleOrSecondLastIsOperator = FormulaAndResult.Length == 1 || (FormulaAndResult.Length > 1 && operators.Contains(FormulaAndResult[^2]));
+            bool dotExists = (lastOperatorIndex == -1 && FormulaAndResult.Contains(".")) ||
+                             (lastOperatorIndex != -1 && FormulaAndResult.Substring(lastOperatorIndex + 1).Contains("."));
 
 
 
@@ -131,7 +136,7 @@ namespace Calculator.MVVM.ViewModel
                     return;
                 }
 
-                // 연산자 뒤에 '.'이 입력될 경우
+                // 연산자 바로 뒤에 '.'이 입력될 경우
                 if (input == ".")
                 {
                     return;
@@ -139,51 +144,19 @@ namespace Calculator.MVVM.ViewModel
             }
 
 
-            // 수정할 부분 시작
-
-
-            // 마지막 연산자의 위치를 찾기 위해 for문을 활용한 변수 lastOperatorIndex
-            int lastOperatorIndex = -1;
-            for (int i = FormulaAndResult.Length - 1; i >= 0; i--)
+            // '.'이 입력될 경우
+            if (input == ".")
             {
-                if (operators.Contains(FormulaAndResult[i]))
+                // '.'이 존재하지 않으면 추가
+                if (!dotExists)
                 {
-                    lastOperatorIndex = i;
-                    break;
+                    FormulaAndResult += input;
+                }
+                else
+                {
+                    return;
                 }
             }
-
-            // 마지막 연산자 다음에 숫자가 있는지 확인
-            if (lastOperatorIndex != -1 && lastOperatorIndex < FormulaAndResult.Length - 1)
-            {
-                for (int i = lastOperatorIndex + 1; i < FormulaAndResult.Length; i++)
-                {
-                    if (char.IsDigit(FormulaAndResult[i]))
-                    {
-                        // 숫자 다음에 '.'이 없는지 확인
-                        if (!FormulaAndResult.Substring(lastOperatorIndex + 1, i - lastOperatorIndex - 1).Contains("."))
-                        {
-                            FormulaAndResult += input; // 소수점 추가
-                        }
-                        break;
-                    }
-                    else if (operators.Contains(FormulaAndResult[i]))
-                    {
-                        break;
-                    }
-                }
-            }
-
-            // 맨 앞에 있는 숫자 뒤에 '.'이 올 경우
-            if (isLastNumber && input == ".")
-            {
-                FormulaAndResult += input;
-            }
-
-
-            // 수정해야 할 부분 끝
-
-
 
 
             // 숫자 입력 추가
