@@ -14,12 +14,25 @@ namespace Calculator.MVVM.ViewModel
     {
         private string _formulaAndResult;
         private readonly CalculatorModel _model;
+        private string _calculationHistory;
 
         public CalculatorViewModel()
         {
             _model = new CalculatorModel();
             FormulaAndResult = string.Empty;
         }
+
+
+        public string CalculationHistory
+        {
+            get => _calculationHistory;
+            set
+            {
+                _calculationHistory = value;
+                OnPropertyChanged();
+            }
+        }
+
 
         public string FormulaAndResult
         {
@@ -261,7 +274,7 @@ namespace Calculator.MVVM.ViewModel
                 {
                     return;
                 }
-                
+
 
                 // 수식을 계산
                 FormulaAndResult = _model.Calculation(modifiedFormula).ToString();
@@ -270,6 +283,22 @@ namespace Calculator.MVVM.ViewModel
             catch
             {
                 FormulaAndResult = "Error";
+            }
+        }
+
+
+        // EqualsClick 이벤트 실행 시 FormulaAndResult의 정보를 CalculationHistory에 업로드
+        public void HandleEqualsClick()
+        {
+            if (!string.IsNullOrEmpty(FormulaAndResult))
+            {
+                if (!string.IsNullOrEmpty(CalculationHistory))
+                {
+                    CalculationHistory = string.Empty;
+                }
+
+                CalculationHistory = FormulaAndResult;
+
             }
         }
 
@@ -286,5 +315,6 @@ namespace Calculator.MVVM.ViewModel
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
     }
 }

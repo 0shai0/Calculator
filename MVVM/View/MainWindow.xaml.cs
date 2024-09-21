@@ -43,7 +43,8 @@ namespace Calculator.MVVM.View
 
         private void EqualsClick(object sender, RoutedEventArgs e)
         {
-            ViewModel.CalculateResult();
+            ViewModel.HandleEqualsClick();
+            ViewModel.CalculateResult();           
         }
     }
 }
