@@ -47,6 +47,34 @@ namespace Calculator.MVVM.View
             ViewModel.CalculateResult();           
         }
 
+        private void CalculationHistoryMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            // ViewModel로부터 CalculationHistory와 FormulaAndResult 값을 가져옴
+            var viewModel = (CalculatorViewModel)DataContext;
+
+            // CalculationHistory가 공백이 아닐 때만 처리
+            if (!string.IsNullOrEmpty(viewModel.CalculationHistory))
+            {
+                // CalculationHistory의 내용을 FormulaAndResult로 이동
+                viewModel.FormulaAndResult = viewModel.CalculationHistory;
+
+                // CalculationHistory 초기화
+                viewModel.CalculationHistory = string.Empty;
+            }
+        }
+
+        // 마우스가 RichTextBox에 들어왔을 때 커서를 손가락 모양으로 변경
+        private void CalculationHistoryMouseEnter(object sender, MouseEventArgs e)
+        {
+            ResultBox.Cursor = Cursors.Hand;
+        }
+
+        // 마우스가 RichTextBox에서 나갔을 때 기본 커서로 변경
+        private void CalculationHistoryMouseLeave(object sender, MouseEventArgs e)
+        {
+            ResultBox.Cursor = Cursors.Arrow;
+        }
+
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             string content = string.Empty;
