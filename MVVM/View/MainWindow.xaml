@@ -24,7 +24,7 @@
 						<Setter Property="TextAlignment" Value="Right"/>
 					</Style>
 				</FlowDocument.Resources>
-				<Paragraph>
+				<Paragraph LineHeight="34" LineStackingStrategy="BlockLineHeight">
 					<Run Text="{Binding CalculationHistory}" FontSize="18" Foreground="Gray"/>
 				</Paragraph>
 				<Paragraph>
