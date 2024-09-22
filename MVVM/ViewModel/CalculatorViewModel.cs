@@ -297,6 +297,12 @@ namespace Calculator.MVVM.ViewModel
                     CalculationHistory = string.Empty;
                 }
 
+                // 괄호가 열려있다면 닫는 괄호 추가
+                if (FormulaAndResult.Count(c => c == '(') > FormulaAndResult.Count(c => c == ')'))
+                {
+                    FormulaAndResult += ")";
+                }
+
                 CalculationHistory = FormulaAndResult;
 
             }

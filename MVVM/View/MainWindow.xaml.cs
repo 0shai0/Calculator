@@ -75,6 +75,7 @@ namespace Calculator.MVVM.View
             ResultBox.Cursor = Cursors.Arrow;
         }
 
+        // 키보드로 입력했을 경우
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             string content = string.Empty;
