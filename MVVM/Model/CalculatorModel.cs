@@ -15,7 +15,7 @@ namespace Calculator.MVVM.Model
             var result = Convert.ToDouble(dataTable.Compute(expression, string.Empty));
 
             // 지수 표기법으로 변환 (숫자가 매우 클 때만)
-            if (result > 999999999 || result < -999999999)
+            if (result > 1e9 || result < -1e9)
             {
                 return result.ToString("E");
             }
