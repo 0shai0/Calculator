@@ -5,16 +5,52 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Calculator.MVVM.ViewModel"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800"
-		KeyDown="Window_KeyDown">
+        Title="Calculator" Height="450" Width="800"
+        KeyDown="Window_KeyDown">
 
+	<Window.DataContext>
+		<local:CalculatorViewModel/>
+	</Window.DataContext>
 
-    <Window.DataContext>
-        <local:CalculatorViewModel/>
-    </Window.DataContext>
+	<Window.Resources>
+		<Style TargetType="Button" x:Key="CalculatorButtonStyle">
+			<Setter Property="Background" Value="White"/>
+			<Setter Property="Foreground" Value="Black"/>
+			<Setter Property="FontWeight" Value="Bold"/>
+			<Setter Property="Margin" Value="4"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="Padding" Value="8"/>
+			<Setter Property="Cursor" Value="Hand"/>
+			<Setter Property="FontSize" Value="24"/>
+			<Setter Property="BorderBrush" Value="#FFB0BEC5"/>
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="Button">
+						<Border Background="{TemplateBinding Background}"
+								BorderBrush="{TemplateBinding BorderBrush}"
+								BorderThickness="{TemplateBinding BorderThickness}"
+								CornerRadius="10">
+							<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+						</Border>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+			<Style.Triggers>
+				<Trigger Property="Content" Value="=">
+					<Setter Property="Background" Value="#2196F3"/>
+					<Setter Property="Foreground" Value="White"/>
+				</Trigger>
+				<Trigger Property="IsMouseOver" Value="True">
+					<Setter Property="Background" Value="#E0E0E0"/>
+				</Trigger>
+				<Trigger Property="IsPressed" Value="True">
+					<Setter Property="Background" Value="#B0BEC5"/>
+				</Trigger>
+			</Style.Triggers>
+		</Style>
+	</Window.Resources>
 
-
-    <Grid HorizontalAlignment="Center">
+	<Grid HorizontalAlignment="Center" VerticalAlignment="Center">
 
 		<RichTextBox x:Name="ResultBox" FontSize="30" Width="300" Height="80" Margin="10"
                      VerticalAlignment="Top" HorizontalAlignment="Center" IsReadOnly="True">
@@ -27,8 +63,8 @@
 				</FlowDocument.Resources>
 				<Paragraph LineHeight="34" LineStackingStrategy="BlockLineHeight">
 					<Run Text="{Binding CalculationHistory}" FontSize="18" Foreground="Gray"
-						 PreviewMouseDown="CalculationHistoryMouseDown"
-					     MouseEnter="CalculationHistoryMouseEnter"
+                         PreviewMouseDown="CalculationHistoryMouseDown"
+                         MouseEnter="CalculationHistoryMouseEnter"
                          MouseLeave="CalculationHistoryMouseLeave"/>
 				</Paragraph>
 				<Paragraph>
@@ -37,67 +73,54 @@
 			</FlowDocument>
 		</RichTextBox>
 
+		<Grid Margin="10,100,10,10" HorizontalAlignment="Center">
 
-        <Grid Margin="10,100,10,10" HorizontalAlignment="Center">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="56"/>
+				<RowDefinition Height="56"/>
+				<RowDefinition Height="56"/>
+				<RowDefinition Height="56"/>
+				<RowDefinition Height="56"/>
+			</Grid.RowDefinitions>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="80"/>
+				<ColumnDefinition Width="80"/>
+				<ColumnDefinition Width="80"/>
+				<ColumnDefinition Width="80"/>
+			</Grid.ColumnDefinitions>
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="50"/>
-                <RowDefinition Height="50"/>
-                <RowDefinition Height="50"/>
-                <RowDefinition Height="50"/>
-                <RowDefinition Height="50"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="70"/>
-                <ColumnDefinition Width="70"/>
-                <ColumnDefinition Width="70"/>
-                <ColumnDefinition Width="70"/>
-            </Grid.ColumnDefinitions>
+			<!-- 첫 번째 행 C, (,  ), ÷ -->
+			<Button Grid.Row="0" Grid.Column="0" Content="C" Click="ClearClick" Style="{StaticResource CalculatorButtonStyle}"/>
+			<Button Grid.Row="0" Grid.Column="1" Content="(" Click="ButtonClick" Style="{StaticResource CalculatorButtonStyle}"/>
+			<Button Grid.Row="0" Grid.Column="2" Content=")" Click="ButtonClick" Style="{StaticResource CalculatorButtonStyle}"/>
+			<Button Grid.Row="0" Grid.Column="3" Content="÷" Click="ButtonClick" Style="{StaticResource CalculatorButtonStyle}"/>
 
+			<!-- 두 번째 7, 8, 9, × -->
+			<Button Grid.Row="1" Grid.Column="0" Content="7" Click="ButtonClick" Style="{StaticResource CalculatorButtonStyle}"/>
+			<Button Grid.Row="1" Grid.Column="1" Content="8" Click="ButtonClick" Style="{StaticResource CalculatorButtonStyle}"/>
+			<Button Grid.Row="1" Grid.Column="2" Content="9" Click="ButtonClick" Style="{StaticResource CalculatorButtonStyle}"/>
+			<Button Grid.Row="1" Grid.Column="3" Content="×" Click="ButtonClick" Style="{StaticResource CalculatorButtonStyle}"/>
 
-            <!-- 첫 번째 행 C, (,  ), ÷ -->
+			<!-- 세 번째 행 4, 5, 6, - -->
+			<Button Grid.Row="2" Grid.Column="0" Content="4" Click="ButtonClick" Style="{StaticResource CalculatorButtonStyle}"/>
+			<Button Grid.Row="2" Grid.Column="1" Content="5" Click="ButtonClick" Style="{StaticResource CalculatorButtonStyle}"/>
+			<Button Grid.Row="2" Grid.Column="2" Content="6" Click="ButtonClick" Style="{StaticResource CalculatorButtonStyle}"/>
+			<Button Grid.Row="2" Grid.Column="3" Content="-" Click="ButtonClick" Style="{StaticResource CalculatorButtonStyle}"/>
 
-            <Button Grid.Row="0" Grid.Column="0" Content="C" FontSize="24" Click="ClearClick"/>
-            <Button Grid.Row="0" Grid.Column="1" Content="(" FontSize="24" Click="ButtonClick"/>
-            <Button Grid.Row="0" Grid.Column="2" Content=")" FontSize="24" Click="ButtonClick"/>
-            <Button Grid.Row="0" Grid.Column="3" Content="÷" FontSize="24" Click="ButtonClick"/>
+			<!-- 네 번째 행 1, 2, 3, + -->
+			<Button Grid.Row="3" Grid.Column="0" Content="1" Click="ButtonClick" Style="{StaticResource CalculatorButtonStyle}"/>
+			<Button Grid.Row="3" Grid.Column="1" Content="2" Click="ButtonClick" Style="{StaticResource CalculatorButtonStyle}"/>
+			<Button Grid.Row="3" Grid.Column="2" Content="3" Click="ButtonClick" Style="{StaticResource CalculatorButtonStyle}"/>
+			<Button Grid.Row="3" Grid.Column="3" Content="+" Click="ButtonClick" Style="{StaticResource CalculatorButtonStyle}"/>
 
+			<!-- 다섯 번째 행 ., 0, backspace, = -->
+			<Button Grid.Row="4" Grid.Column="0" Content="." Click="ButtonClick" Style="{StaticResource CalculatorButtonStyle}"/>
+			<Button Grid.Row="4" Grid.Column="1" Content="0" Click="ButtonClick" Style="{StaticResource CalculatorButtonStyle}"/>
+			<Button Grid.Row="4" Grid.Column="2" Content="Delete" Click="BackSpaceClick" Style="{StaticResource CalculatorButtonStyle}" FontSize="16"/>
+			<Button Grid.Row="4" Grid.Column="3" Content="=" Click="EqualsClick" Style="{StaticResource CalculatorButtonStyle}"/>
 
-            <!-- 두 번째 7, 8, 9, × -->
+		</Grid>
 
-            <Button Grid.Row="1" Grid.Column="0" Content="7" FontSize="24" Click="ButtonClick"/>
-            <Button Grid.Row="1" Grid.Column="1" Content="8" FontSize="24" Click="ButtonClick"/>
-            <Button Grid.Row="1" Grid.Column="2" Content="9" FontSize="24" Click="ButtonClick"/>
-            <Button Grid.Row="1" Grid.Column="3" Content="×" FontSize="24" Click="ButtonClick"/>
-
-
-            <!-- 세 번째 행 4, 5, 6, - -->
-
-            <Button Grid.Row="2" Grid.Column="0" Content="4" FontSize="24" Click="ButtonClick"/>
-            <Button Grid.Row="2" Grid.Column="1" Content="5" FontSize="24" Click="ButtonClick"/>
-            <Button Grid.Row="2" Grid.Column="2" Content="6" FontSize="24" Click="ButtonClick"/>
-            <Button Grid.Row="2" Grid.Column="3" Content="-" FontSize="24" Click="ButtonClick"/>
-
-
-            <!-- 네 번째 행 1, 2, 3, + -->
-
-            <Button Grid.Row="3" Grid.Column="0" Content="1" FontSize="24" Click="ButtonClick"/>
-            <Button Grid.Row="3" Grid.Column="1" Content="2" FontSize="24" Click="ButtonClick"/>
-            <Button Grid.Row="3" Grid.Column="2" Content="3" FontSize="24" Click="ButtonClick"/>
-            <Button Grid.Row="3" Grid.Column="3" Content="+" FontSize="24" Click="ButtonClick"/>
-
-
-            <!-- 다섯 번째 행 ., 0, backspace, = -->
-
-            <Button Grid.Row="4" Grid.Column="0" Content="." FontSize="24" Click="ButtonClick"/>
-            <Button Grid.Row="4" Grid.Column="1" Content="0" FontSize="24" Click="ButtonClick"/>
-            <Button Grid.Row="4" Grid.Column="2" Content="back" FontSize="24" Click="BackSpaceClick"/>
-            <Button Grid.Row="4" Grid.Column="3" Content="=" FontSize="24" Click="EqualsClick"/>
-
-        </Grid>
-
-
-    </Grid>
-
+	</Grid>
 
 </Window>
