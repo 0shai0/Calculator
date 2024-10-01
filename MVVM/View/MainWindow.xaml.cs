@@ -63,16 +63,29 @@ namespace Calculator.MVVM.View
             }
         }
 
-        // 마우스가 RichTextBox에 들어왔을 때 커서를 손가락 모양으로 변경
+        // 마우스가 RichTextBox에 들어왔을 경우 커서를 손가락 모양으로 변경
         private void CalculationHistoryMouseEnter(object sender, MouseEventArgs e)
         {
             ResultBox.Cursor = Cursors.Hand;
+
+            // 마우스가 CalculationHistory에 들어왔을 경우 글자 색상을 검정색으로 변경
+            if (sender is Run run)
+            {
+                run.Foreground = Brushes.Black;
+            }
         }
 
-        // 마우스가 RichTextBox에서 나갔을 때 기본 커서로 변경
+        // 마우스가 RichTextBox에서 나갔을 경우 기본 커서로 변경
         private void CalculationHistoryMouseLeave(object sender, MouseEventArgs e)
         {
             ResultBox.Cursor = Cursors.Arrow;
+
+            // 마우스가 CalculationHistory에 나갔을 경우 글자 색상을 회색으로 변경
+            if (sender is Run run)
+            {
+                run.Foreground = Brushes.Gray;
+            }
+
         }
 
         // 키보드로 입력했을 경우
