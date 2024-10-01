@@ -85,7 +85,7 @@ namespace Calculator.MVVM.ViewModel
             // FormulaAndResult의 '('와 ')'의 개수가 일치하지 않을 경우
             bool unmatchedParentheses = FormulaAndResult.Count(c => c == '(') != FormulaAndResult.Count(c => c == ')');
 
-            // FormulaAndResult의 '('보다 ')'의 개수가 많거나 같을 경우
+            // FormulaAndResult의 '('의 개수기 ')'의 개수보다 많거나 같을 경우
             bool isParenthesesBalancedOrOpenLess = FormulaAndResult.Count(c => c == '(') <= FormulaAndResult.Count(c => c == ')');
 
             // FormulaAndResult의 길이가 1이거나 길이가 1보다 크면서 마지막 문자 앞이 연산자일 경우
@@ -225,8 +225,8 @@ namespace Calculator.MVVM.ViewModel
                 FormulaAndResult += input;
             }
 
-            // 마지막 문자가 숫자이고 '('와 ')'의 개수가 일치하지 않은 경우에 '('이 입력될 경우
 
+            // 마지막 문자가 숫자이고 '('와 ')'의 개수가 일치하지 않은 경우에 '('이 입력될 경우
             if (isLastNumber && unmatchedParentheses && input == "(")
             {
                 return;
@@ -239,11 +239,13 @@ namespace Calculator.MVVM.ViewModel
                 return;
             }
 
+
             // 마지막 문자가 숫자이면서 '('를 입력할 경우
             if (isLastNumber && input == "(")
             {
                 FormulaAndResult += "×";
             }
+
 
             // 연산자를 입력할 경우
             if (isInputOperator)
@@ -264,6 +266,7 @@ namespace Calculator.MVVM.ViewModel
             {
                 FormulaAndResult = FormulaAndResult.Substring(0, FormulaAndResult.Length - 1);
             }
+
 
             if (FormulaAndResult == "Error")
             {
@@ -295,7 +298,7 @@ namespace Calculator.MVVM.ViewModel
                 // 마지막 문자가 ')'일 경우
                 bool isLastParenthesisClose = FormulaAndResult.Length > 0 && FormulaAndResult[^1] == ')';
 
-                // FormulaAndResult의 '('가 ')'의 개수보다 초과될 경우
+                // FormulaAndResult의 '('의 개수가 ')'의 개수보다 많을 경우
                 bool isOpeningParenthesisExcess = FormulaAndResult.Count(c => c == '(') > FormulaAndResult.Count(c => c == ')');
 
 
@@ -306,14 +309,10 @@ namespace Calculator.MVVM.ViewModel
                 }
 
 
-                // 괄호가 열려있기만 하고 닫혀있지 않을 경우
-                if (isOpeningParenthesisExcess)
+                // 마지막 문자가 연산자가 아니면서 '('의 개수가 ')'의 개수보다 많을 경우
+                if (isOpeningParenthesisExcess && !isLastOperator)
                 {
-                    // 마지막 문자가 연산자가 아닐 경우에만 ')' 추가
-                    if (!isLastOperator)
-                    {
-                        FormulaAndResult += ")";
-                    }
+                    FormulaAndResult += ")";                   
                 }
 
 
@@ -354,7 +353,7 @@ namespace Calculator.MVVM.ViewModel
             // 마지막 문자가 ')'일 경우
             bool isLastParenthesisClose = FormulaAndResult.Length > 0 && FormulaAndResult[^1] == ')';
 
-            // FormulaAndResult의 '('가 ')'의 개수보다 초과될 경우
+            // FormulaAndResult의 '('의 개수가 ')'의 개수보다 초과될 경우
             bool isOpeningParenthesisExcess = FormulaAndResult.Count(c => c == '(') > FormulaAndResult.Count(c => c == ')');
 
             if (isFormulaNotEmpty)
@@ -365,13 +364,15 @@ namespace Calculator.MVVM.ViewModel
                     CalculationHistory = string.Empty;
                 }
 
-                // 연산자일 경우 그냥 리턴
+
+                // 마지막 문자가 연산자이면서 그 연산자가 ')'가 아닐 경우
                 if (isLastOperator && !isLastParenthesisClose)
                 {
                     return;
                 }
 
-                // 괄호가 열려있다면 닫는 괄호 추가
+
+                // '('의 개수가 ')'의 개수보다 많을 경우
                 if (isOpeningParenthesisExcess)
                 {
                     FormulaAndResult += ")";
