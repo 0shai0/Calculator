@@ -295,15 +295,12 @@ namespace Calculator.MVVM.ViewModel
                 // 마지막 문자가 ')'일 경우
                 bool isLastParenthesisClose = FormulaAndResult.Length > 0 && FormulaAndResult[^1] == ')';
 
-                // FormulaAndResult의 '('와 ')'의 개수가 일치하지 않을 경우
-                bool unmatchedParentheses = FormulaAndResult.Count(c => c == '(') != FormulaAndResult.Count(c => c == ')');
-
                 // FormulaAndResult의 '('가 ')'의 개수보다 초과될 경우
                 bool isOpeningParenthesisExcess = FormulaAndResult.Count(c => c == '(') > FormulaAndResult.Count(c => c == ')');
 
 
-                // 괄호가 닫히지 않은 상태에서 연산자가 마지막인데 '='을 누르면 그냥 return
-                if (unmatchedParentheses && isLastOperator)
+                // 마지막 문자가 연산자이면서 그 연산자가 ')'이 아닐 경우
+                if (isLastOperator && !isLastParenthesisClose)
                 {
                     return;
                 }
@@ -312,21 +309,16 @@ namespace Calculator.MVVM.ViewModel
                 // 괄호가 열려있기만 하고 닫혀있지 않을 경우
                 if (isOpeningParenthesisExcess)
                 {
-                    FormulaAndResult += ")";
-
-                    // 위에서 modifiedFormula를 선언했지만 ')'를 추가한 후에는 modifiedFormula를 반영하지 않고 바로 계산을 하기에 다시 선언
-                    modifiedFormula = FormulaAndResult.Replace('×', '*').Replace('÷', '/');
+                    // 마지막 문자가 연산자가 아닐 경우에만 ')' 추가
+                    if (!isLastOperator)
+                    {
+                        FormulaAndResult += ")";
+                    }
                 }
+
 
                 // 빈 문자열인 상태에서 '='을 입력할 경우
                 if (isEmpty)
-                {
-                    return;
-                }
-               
-
-                // 마지막이 연산자이고 연산자 뒤에 '='을 입력할 경우
-                if (isLastOperator && !isLastParenthesisClose)
                 {
                     return;
                 }
@@ -347,11 +339,20 @@ namespace Calculator.MVVM.ViewModel
         // EqualsClick 이벤트 실행 시 FormulaAndResult의 정보를 CalculationHistory에 업로드
         public void HandleEqualsClick()
         {
+            // 연산자 리스트 정의
+            string operators = "+-×÷()";
+
             // FormulaAndResult가 null이나 빈 문자열이 아닐 경우
             bool isFormulaNotEmpty = !string.IsNullOrEmpty(FormulaAndResult);
 
             // CalculationHistory가 null이나 빈 문자열이 아닐 경우
             bool isHistoryNotEmpty = !string.IsNullOrEmpty(CalculationHistory);
+
+            // 마지막 문자가 연산자일 경우
+            bool isLastOperator = FormulaAndResult.Length > 0 && operators.Contains(FormulaAndResult[^1]);
+
+            // 마지막 문자가 ')'일 경우
+            bool isLastParenthesisClose = FormulaAndResult.Length > 0 && FormulaAndResult[^1] == ')';
 
             // FormulaAndResult의 '('가 ')'의 개수보다 초과될 경우
             bool isOpeningParenthesisExcess = FormulaAndResult.Count(c => c == '(') > FormulaAndResult.Count(c => c == ')');
@@ -364,6 +365,12 @@ namespace Calculator.MVVM.ViewModel
                     CalculationHistory = string.Empty;
                 }
 
+                // 연산자일 경우 그냥 리턴
+                if (isLastOperator && !isLastParenthesisClose)
+                {
+                    return;
+                }
+
                 // 괄호가 열려있다면 닫는 괄호 추가
                 if (isOpeningParenthesisExcess)
                 {
@@ -371,7 +378,6 @@ namespace Calculator.MVVM.ViewModel
                 }
 
                 CalculationHistory = FormulaAndResult;
-
             }
         }
 
