@@ -49,10 +49,10 @@ namespace Calculator.MVVM.View
 
         private void CalculationHistoryMouseDown(object sender, MouseButtonEventArgs e)
         {
-            // ViewModel로부터 CalculationHistory와 FormulaAndResult 값을 가져옴
+            // ViewModel로부터 CalculationHistory와 FormulaAndResult의 값을 가져오기 위해 선언
             var viewModel = (CalculatorViewModel)DataContext;
 
-            // CalculationHistory가 공백이 아닐 때만 처리
+            // CalculationHistory가 공백이 아닐 경우
             if (!string.IsNullOrEmpty(viewModel.CalculationHistory))
             {
                 // CalculationHistory의 내용을 FormulaAndResult로 이동
@@ -152,9 +152,10 @@ namespace Calculator.MVVM.View
                     break;
             }
 
+            // content가 null이거나 빈 문자열이 아닌 경우 (switch에서 선언한 숫자나 연산자만을 입력받기 위한 조치)
             if (!string.IsNullOrEmpty(content))
             {
-                // ButtonClick 호출
+                // content에서 입력받은 숫자나 연산자와 같은 ButtonClick 호출
                 ButtonClick(new Button { Content = content }, new RoutedEventArgs());
             }
         }

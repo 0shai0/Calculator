@@ -47,34 +47,73 @@ namespace Calculator.MVVM.ViewModel
 
         // 클릭 이벤트, 키보드 입력 시 FormulaAndResult에 추가
         // FormulaAndResult[^1]는 char이기 때문에 ""이 아닌 ''로 작성
+        // FormulaAndResult.Length > 0를 확인하는 이유는 빈 문자열인 상태에서 마지막 문자를 확인할 경우 오류가 발생하기 때문
 
         public void UpdateFormula(string input)
         {
             // 연산자 리스트 정의
             string operators = "+-×÷()";
 
+            // FormulaAndResult가 빈 문자열일 경우
+            bool isEmpty = FormulaAndResult.Length == 0;
+
+            // 숫자가 입력될 경우
+            bool isInputNumber = char.IsDigit(input[0]);
+
+            // 연산자가 입력될 경우
+            bool isInputOperator = operators.Contains(input);
+
+            // 마지막 문자가 숫자일 경우
+            bool isLastNumber = FormulaAndResult.Length > 0 && char.IsDigit(FormulaAndResult[^1]);
+
+            // 마지막 문자가 연산자일 경우
+            bool isLastOperator = FormulaAndResult.Length > 0 && operators.Contains(FormulaAndResult[^1]);
+
+            // 마지막 문자가 숫자 '0'일 경우
+            bool isLastZero = FormulaAndResult.Length > 0 && FormulaAndResult[^1] == '0';
+
+            // 마지막 문자가 '('일 경우
+            bool isLastParenthesisOpen = FormulaAndResult.Length > 0 && FormulaAndResult[^1] == '(';
+
+            // 마지막 문자가 ')'일 경우
+            bool isLastParenthesisClose = FormulaAndResult.Length > 0 && FormulaAndResult[^1] == ')';
+
+            // 마지막 문자가 '.'일 경우
+            bool isLastDot = FormulaAndResult.Length > 0 && FormulaAndResult[^1] == '.';
+
+            // FormulaAndResult의 '('와 ')'의 개수가 일치하지 않을 경우
+            bool unmatchedParentheses = FormulaAndResult.Count(c => c == '(') != FormulaAndResult.Count(c => c == ')');
+
+            // FormulaAndResult의 '('보다 ')'의 개수가 많거나 같을 경우
+            bool isParenthesesBalancedOrOpenLess = FormulaAndResult.Count(c => c == '(') <= FormulaAndResult.Count(c => c == ')');
+
+            // FormulaAndResult의 길이가 1이거나 길이가 1보다 크면서 마지막 문자 앞이 연산자일 경우
+            bool isSingleOrSecondLastIsOperator = FormulaAndResult.Length == 1 || (FormulaAndResult.Length > 1 && operators.Contains(FormulaAndResult[^2]));
+
             // FormulaAndResult에서 마지막으로 사용된 operators의 위치가 어디가 마지막인지 확인
             int lastOperatorIndex = FormulaAndResult.LastIndexOfAny(operators.ToCharArray());
 
-            bool isEmpty = FormulaAndResult.Length == 0;
-            bool isInputNumber = char.IsDigit(input[0]);
-            bool isInputOperator = operators.Contains(input);
-            bool isLastNumber = FormulaAndResult.Length > 0 && char.IsDigit(FormulaAndResult[^1]);
-            bool isLastOperator = FormulaAndResult.Length > 0 && operators.Contains(FormulaAndResult[^1]);
-            bool isLastZero = FormulaAndResult.Length > 0 && FormulaAndResult[^1] == '0';
-            bool isLastParenthesisOpen = FormulaAndResult.Length > 0 && FormulaAndResult[^1] == '(';
-            bool isLastParenthesisClose = FormulaAndResult.Length > 0 && FormulaAndResult[^1] == ')';
-            bool isLastDot = FormulaAndResult.Length > 0 && FormulaAndResult[^1] == '.';
-            bool unmatchedParentheses = FormulaAndResult.Count(c => c == '(') != FormulaAndResult.Count(c => c == ')');
-            bool isParenthesesBalancedOrOpenLess = FormulaAndResult.Count(c => c == '(') <= FormulaAndResult.Count(c => c == ')');
-            bool isSingleOrSecondLastIsOperator = FormulaAndResult.Length == 1 || (FormulaAndResult.Length > 1 && operators.Contains(FormulaAndResult[^2]));
+            // 연산자가 없으면서 '.'이 있는 경우이거나 연산자가 있으면서 마지막 연산자 이후에 '.'이 있을 경우
             bool dotExists = (lastOperatorIndex == -1 && FormulaAndResult.Contains(".")) ||
                              (lastOperatorIndex != -1 && FormulaAndResult.Substring(lastOperatorIndex + 1).Contains("."));
 
 
+            // FormulaAndResul가 Error이면서 숫자나 연산자, '.'을 입력할 경우
+            if (FormulaAndResult == "Error" && (isInputNumber || isInputOperator || input == "."))
+            {
+                if (input == "+" || input == "×" || input == "÷" || input == ")" || input == ".")
+                {
+                    Clear();
+                    return;
+                }
+                else
+                {
+                    Clear();
+                }  
+            }
 
 
-            // '('와 '-'가 맨 앞에 입력되는 경우
+            // 빈 문자열인 상태에서 '('이나 '-'가 입력할 경우
             if (isEmpty && (input == "(" || input == "-"))
             {
                 FormulaAndResult += input;
@@ -82,29 +121,29 @@ namespace Calculator.MVVM.ViewModel
             }
 
 
-            // '.'이 맨 앞에 올 경우
+            // 빈 문자열인 상태에서 연산자나 '.'을 입력할 경우
             if (isEmpty && (isInputOperator || input == "."))
             {
                 return;
             }
 
 
-            // 마지막이 0이고 그 앞에 다른 숫자가 있는 경우에는 0 추가 입력을 허용
-            if (isLastZero && isInputNumber && input == "0" && !isSingleOrSecondLastIsOperator)
+            // 마지막 문자가 숫자 '0'이면서 그 앞에 다른 숫자가 있는 경우에 숫자 '0'을 입력할 경우
+            if (isLastZero && !isSingleOrSecondLastIsOperator && input == "0")
             {
                 FormulaAndResult += input;
             }
 
 
-            // 0 뒤에 0이 올 경우
+            // 마지막 문자가 숫자 '0'이고 숫자 '0'이 입력할 경우
             if (isLastZero && input == "0")
             {
                 return;
             }
 
 
-            // 마지막이 0이고 0 앞에 다른 숫자가 없는데 숫자가 입력될 경우
-            if (isLastZero && isInputNumber && isSingleOrSecondLastIsOperator)
+            // 마지막 문자가 숫자 '0'이고 '0'만 있거나 '0' 앞에 연산자가 있는 경우에 숫자를 입력할 경우
+            if (isLastZero && isSingleOrSecondLastIsOperator && isInputNumber)
             {
                 FormulaAndResult = FormulaAndResult.Remove(FormulaAndResult.Length - 1);
                 FormulaAndResult += input;
@@ -112,14 +151,14 @@ namespace Calculator.MVVM.ViewModel
             }
 
 
-            // '.' 뒤에 '.'과 연산자가 오는 경우
-            if (isLastDot && isInputOperator && input == ".")
+            // 마지막 문자가 '.'이고 연산자나 '.'를 입력할 경우
+            if (isLastDot && (isInputOperator || input == "."))
             {
                 return;
             }
 
 
-            // 마지막 문자가 연산자이면서 그 연산자가 ')'이면서 다음에 입력되는 것이 '('일 경우
+            // 마지막 문자가 연산자이면서 그 연산자가 ')'이고 '('를 입력할 경우
             if (isLastOperator && isLastParenthesisClose && input == "(")
             {
                 FormulaAndResult += "×" + input;
@@ -127,7 +166,7 @@ namespace Calculator.MVVM.ViewModel
             }
 
 
-            // 마지막 문자가 연산자이면서 그 연산자가 ')'이면서 다음에 입력되는 것이 숫자인 경우
+            // 마지막 문자가 연산자이면서 그 연산자가 ')'이고 숫자를 입력할 경우
             if (isLastOperator && isLastParenthesisClose && isInputNumber)
             {
                 FormulaAndResult += "×" + input;
@@ -135,39 +174,39 @@ namespace Calculator.MVVM.ViewModel
             }
 
 
-            // 마지막 문자가 연산자이면서 그 연산자가 ')'이고 다음에 입력되는 것이 ')'이외의 연산자인 경우
-            if (isLastOperator && isLastParenthesisClose && isInputOperator && input != ")")
+            // 마지막 문자가 연산자이면서 그 연산자가 ')'이고 ')'이외의 연산자를 입력할 경우
+            if (isLastOperator && isLastParenthesisClose && input != ")" && isInputOperator)
             {
                 FormulaAndResult += input;
                 return;
             }
 
 
-            // 마지막 문자가 연산자이면서 연산자가 입력될 경우
-            if (isLastOperator && isInputOperator && input != "(")
+            // 마지막 문자가 연산자이면서 '(' 이외의 연산자를 입력할 경우
+            if (isLastOperator && input != "(" && isInputOperator)
             {
                 return;
             }
 
 
-            // 마지막 문자가 연산자이면서 그 연산자가 '('이고 '('이 입력될 경우 
+            // 마지막 문자가 연산자이면서 그 연산자가 '('이고 '('을 입력할 경우 
             if (isLastOperator && isLastParenthesisOpen && input == "(")
             {
                 return;
             }
 
 
-            // 마지막 문자가 연산자이면서 바로 뒤에 '.'이 입력될 경우
+            // 마지막 문자가 연산자이면서 '.'을 입력할 경우
             if (isLastOperator && input == ".")
             {
                 return;
             }
 
 
-            // '.'이 입력될 경우
+            // '.'이 입력할 경우
             if (input == ".")
             {
-                // '.'이 존재하지 않으면 추가
+                // '.'이 존재하지 않으면 추가 (자세한 조건은 변수에서 선언함)
                 if (!dotExists)
                 {
                     FormulaAndResult += input;
@@ -179,13 +218,13 @@ namespace Calculator.MVVM.ViewModel
             }
 
 
-            // 숫자 입력 추가
+            // 숫자를 입력할 경우
             if (isInputNumber)
             {
                 FormulaAndResult += input;
             }
 
-            // 마지막이 숫자이고 마무리되지 않은 괄호가 있는 상태에서 '('이 입력될 경우
+            // 마지막 문자가 숫자이고 '('와 ')'의 개수가 일치하지 않은 경우에 '('이 입력될 경우
 
             if (isLastNumber && unmatchedParentheses && input == "(")
             {
@@ -193,23 +232,25 @@ namespace Calculator.MVVM.ViewModel
             }
             
 
-            // 시작되는 '('가 없는 상태에서 숫자 뒤에 ')'가 온 경우
-            if (isLastNumber && input == ")" && isParenthesesBalancedOrOpenLess)
+            // 마지막 문자가 숫자이고 시작되는 '('가 ')'의 개수보다 적거나 같은 경우에 ')'를 입력할 경우
+            if (isLastNumber && isParenthesesBalancedOrOpenLess && input == ")")
             {
                 return;
             }
 
-            // 숫자가 나오고 '('가 올 경우
+            // 마지막 문자가 숫자이면서 '('를 입력할 경우
             if (isLastNumber && input == "(")
             {
                 FormulaAndResult += "×";
             }
 
-            // 연산자 입력 추가
+            // 연산자를 입력할 경우
             if (isInputOperator)
             {
                 FormulaAndResult += input;
             }
+
+            
         }
 
 
@@ -217,6 +258,7 @@ namespace Calculator.MVVM.ViewModel
 
         public void DeleteFormula()
         {
+            // FormulaAndResult가 null이나 빈 문자열이 아닐 경우
             if (!string.IsNullOrEmpty(FormulaAndResult))
             {
                 FormulaAndResult = FormulaAndResult.Substring(0, FormulaAndResult.Length - 1);
@@ -230,20 +272,32 @@ namespace Calculator.MVVM.ViewModel
 
 
         // '=' 버튼 클릭 시 결과값을 FormulaAndResult에 저장
+        // FormulaAndResult[^1]는 char이기 때문에 ""이 아닌 ''로 작성
+        // FormulaAndResult.Length > 0를 확인하는 이유는 빈 문자열인 상태에서 마지막 문자를 확인할 경우 오류가 발생하기 때문
 
         public void CalculateResult()
         {
             try
             {
+                // 연산자 리스트 정의
                 string operators = "+-×÷()";
 
-                // 수식에서 연산자 변환
+                // 계산 시 ×, ÷는 오류가 발생하기에 연산자로 변환
                 string modifiedFormula = FormulaAndResult.Replace('×', '*').Replace('÷', '/');
 
+                // FormulaAndResult가 빈 문자열일 경우
                 bool isEmpty = FormulaAndResult.Length == 0;
+
+                // 마지막 문자가 연산자일 경우
                 bool isLastOperator = FormulaAndResult.Length > 0 && operators.Contains(FormulaAndResult[^1]);
+
+                // 마지막 문자가 ')'일 경우
                 bool isLastParenthesisClose = FormulaAndResult.Length > 0 && FormulaAndResult[^1] == ')';
+
+                // FormulaAndResult의 '('와 ')'의 개수가 일치하지 않을 경우
                 bool unmatchedParentheses = FormulaAndResult.Count(c => c == '(') != FormulaAndResult.Count(c => c == ')');
+
+                // FormulaAndResult의 '('가 ')'의 개수보다 초과될 경우
                 bool isOpeningParenthesisExcess = FormulaAndResult.Count(c => c == '(') > FormulaAndResult.Count(c => c == ')');
 
 
@@ -254,30 +308,30 @@ namespace Calculator.MVVM.ViewModel
                 }
 
 
-                // 괄호가 열려있다면 닫는 괄호 추가
+                // 괄호가 열려있기만 하고 닫혀있지 않을 경우
                 if (isOpeningParenthesisExcess)
                 {
                     FormulaAndResult += ")";
 
-                    // ')'를 추가한 후에는 modifiedFormula를 반영하지 않고 바로 계산을 하기에 오류 발생해 다시 선언
+                    // 위에서 modifiedFormula를 선언했지만 ')'를 추가한 후에는 modifiedFormula를 반영하지 않고 바로 계산을 하기에 다시 선언
                     modifiedFormula = FormulaAndResult.Replace('×', '*').Replace('÷', '/');
                 }
 
-                // '='이 맨 앞에 입력될 경우
+                // 빈 문자열인 상태에서 '='을 입력할 경우
                 if (isEmpty)
                 {
                     return;
                 }
                
 
-                // 연산자 뒤에 '='을 입력될 경우
+                // 마지막이 연산자이고 연산자 뒤에 '='을 입력할 경우
                 if (isLastOperator && !isLastParenthesisClose)
                 {
                     return;
                 }
 
 
-                // 수식을 계산
+                // CalculationModel의 Calculation으로 이동 후 수식을 계산
                 FormulaAndResult = _model.Calculation(modifiedFormula).ToString();
 
             }
@@ -291,13 +345,18 @@ namespace Calculator.MVVM.ViewModel
         // EqualsClick 이벤트 실행 시 FormulaAndResult의 정보를 CalculationHistory에 업로드
         public void HandleEqualsClick()
         {
-
+            // FormulaAndResult가 null이나 빈 문자열이 아닐 경우
             bool isFormulaNotEmpty = !string.IsNullOrEmpty(FormulaAndResult);
-            bool isHistoryNotEmpty = !string.IsNullOrEmpty(FormulaAndResult);
+
+            // CalculationHistory가 null이나 빈 문자열이 아닐 경우
+            bool isHistoryNotEmpty = !string.IsNullOrEmpty(CalculationHistory);
+
+            // FormulaAndResult의 '('가 ')'의 개수보다 초과될 경우
             bool isOpeningParenthesisExcess = FormulaAndResult.Count(c => c == '(') > FormulaAndResult.Count(c => c == ')');
 
             if (isFormulaNotEmpty)
             {
+                // CalculationHistory에 문자가 있을 경우 빈 문자열로 초기화
                 if (isHistoryNotEmpty)
                 {
                     CalculationHistory = string.Empty;
