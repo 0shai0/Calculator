@@ -14,7 +14,7 @@ namespace Calculator.MVVM.Model
             var dataTable = new DataTable();
             var result = Convert.ToDouble(dataTable.Compute(expression, string.Empty));
 
-            // 지수 표기법으로 변환 (숫자가 매우 클 때만), 아니라면 정수 결과 처리
+            // 숫자가 매우 크거나 매우 작을 경우 지수 표기법으로 변환, 아니라면 정수일 경우 정수로 반환
             return result > 1e9 || result < -1e9 ? result.ToString("E") : (result % 1 == 0 ? (int)result : result);
         }
     }
