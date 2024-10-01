@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -337,6 +338,7 @@ namespace Calculator.MVVM.ViewModel
             }
             catch
             {
+                MessageBox.Show("오류가 발생했습니다."+ Environment.NewLine + "다시 계산하시려면 숫자, 연산자 등을 입력해주십시오.", "계산기 오류", MessageBoxButton.OK, MessageBoxImage.Error);
                 FormulaAndResult = "Error";
             }
         }
