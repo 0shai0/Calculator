@@ -85,7 +85,7 @@ namespace Calculator.MVVM.ViewModel
             // FormulaAndResult의 '('와 ')'의 개수가 일치하지 않을 경우
             bool unmatchedParentheses = FormulaAndResult.Count(c => c == '(') != FormulaAndResult.Count(c => c == ')');
 
-            // FormulaAndResult의 '('의 개수기 ')'의 개수보다 많거나 같을 경우
+            // FormulaAndResult의 '('의 개수가 ')'의 개수보다 많거나 같을 경우
             bool isParenthesesBalancedOrOpenLess = FormulaAndResult.Count(c => c == '(') <= FormulaAndResult.Count(c => c == ')');
 
             // FormulaAndResult의 길이가 1이거나 길이가 1보다 크면서 마지막 문자 앞이 연산자일 경우
