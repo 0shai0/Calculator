@@ -144,7 +144,7 @@ namespace Calculator.MVVM.ViewModel
             }
 
 
-            // 마지막 문자가 숫자 '0'이면서 그 앞에 다른 숫자가 있는 경우에 숫자 '0'을 입력할 경우
+            // 마지막 문자가 숫자 '0'이면서 그 앞에 다른 숫자가 있는 상태에서 숫자 '0'을 입력할 경우
             if (isLastCharZero && !isSingleOrSecondLastIsOperator && input == "0")
             {
                 Add(input);
@@ -206,6 +206,14 @@ namespace Calculator.MVVM.ViewModel
             }
 
 
+            // 마지막 문자가 연산자이면서 그 연산자가 ')'이고 '('의 개수가 ')'의 개수보다 많은 상태에서 ')' 연산자를 입력할 경우
+            if (IsLastCharOperator(operators) && IsLastCharParenthesisClose() && IsOpeningParenthesisExcess() && input == ")")
+            {
+                Add(input);
+                return;
+            }
+
+
             // 마지막 문자가 연산자이면서 '(' 이외의 연산자를 입력할 경우
             if (IsLastCharOperator(operators) && input != "(" && isInputOperator)
             {
@@ -249,14 +257,14 @@ namespace Calculator.MVVM.ViewModel
             }
 
 
-            // 마지막 문자가 숫자이고 '('와 ')'의 개수가 일치하지 않은 경우에 '('이 입력될 경우
+            // 마지막 문자가 숫자이고 '('와 ')'의 개수가 일치하지 않은 상태에서 '('이 입력될 경우
             if (isLastCharNumber && unmatchedParentheses && input == "(")
             {
                 return;
             }
 
 
-            // 마지막 문자가 숫자이고 시작되는 '('가 ')'의 개수보다 적거나 같은 경우에 ')'를 입력할 경우
+            // 마지막 문자가 숫자이고 시작되는 '('가 ')'의 개수보다 적거나 같은 상태에서 ')'를 입력할 경우
             if (isLastCharNumber && isParenthesesBalancedOrOpenLess && input == ")")
             {
                 return;
