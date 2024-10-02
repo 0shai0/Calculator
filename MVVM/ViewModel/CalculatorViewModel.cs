@@ -63,6 +63,7 @@ namespace Calculator.MVVM.ViewModel
         private bool IsOpeningParenthesisExcess() =>
             FormulaAndResult.Count(c => c == '(') > FormulaAndResult.Count(c => c == ')');
 
+
         // 입력 값을 FormulaAndResult에 추가하는 메서드
         private void Add(string input)
         {
@@ -283,8 +284,6 @@ namespace Calculator.MVVM.ViewModel
             {
                 Add(input);
             }
-
-
         }
 
 
