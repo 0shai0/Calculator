@@ -158,6 +158,15 @@ namespace Calculator.MVVM.ViewModel
             }
 
 
+            // 마지막 문자가 숫자 '0'이고 '0'만 있거나 '0' 앞에 연산자가 있는 경우에 숫자를 입력할 경우
+            if (isLastCharZero && isSingleOrSecondLastIsOperator && isInputNumber)
+            {
+                FormulaAndResult = FormulaAndResult.Remove(FormulaAndResult.Length - 1);
+                Add(input);
+                return;
+            }
+
+
             // 마지막 문자가 '.'이고 연산자나 '.'를 입력할 경우
             if (isLastCharDot && (isInputOperator || input == "."))
             {
